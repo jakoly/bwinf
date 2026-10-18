@@ -6,8 +6,8 @@ Dieses Repository enthält die gemeinsame Bearbeitung der Aufgaben **2 – Flagg
 
 | Name | Rolle | Aufgabenbereich |
 |---|---|---|
-| [Name Mitarbeiter 1] | Entwicklung und Dokumentation | Aufgabe 2: Flaggenmusterung |
-| [Name Mitarbeiter 2] | Entwicklung und Dokumentation | Aufgabe 5: Inselbegabung |
+| OzzyOsbourni | Aufgabe 2: Flaggenmusterung |
+| Jakoly | Aufgabe 5: Inselbegabung |
 
 ## Aufgabe 2: Flaggenmusterung
 
