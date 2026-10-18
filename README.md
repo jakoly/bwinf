@@ -2,13 +2,6 @@
 
 Dieses Repository enthält die gemeinsame Bearbeitung der Aufgaben **2 – Flaggenmusterung** und **5 – Inselbegabung** aus der 1. Runde des 45. Bundeswettbewerbs Informatik.
 
-## Mitarbeitende
-
-| Name | Rolle |
-|---|---|---|
-| OzzyOsbourni | Aufgabe 2: Flaggenmusterung |
-| Jakoly | Aufgabe 5: Inselbegabung |
-
 ## Aufgabe 2: Flaggenmusterung
 
 Ziel ist die Ähnlichkeitsanalyse von Flaggenbildern. Das Programm vergleicht die vorgegebenen Flaggen anhand von Farb- und Strukturmerkmalen und erstellt die geforderten Ähnlichkeitsranglisten.
