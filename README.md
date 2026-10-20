@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img alt="Python" src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
   <img alt="Pygame" src="https://img.shields.io/badge/Oberfläche-Pygame-2E7D32">
   <img alt="Speicherung" src="https://img.shields.io/badge/Speicherung-SQLite-003B57?logo=sqlite&logoColor=white">
 </p>
