@@ -14,6 +14,8 @@ pygame.init()
 displWidth = 1280
 displHeight = 720
 
+showAllPalmen = True
+
 font = pygame.font.SysFont("Arial", 25)
 primaryColor =  (220, 229, 204)
 accentColor = (139, 148, 126)
@@ -46,6 +48,10 @@ class Button:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             return self.rect.collidepoint(event.pos)
         return False
+
+def togglePalmen():
+    global showAllPalmen
+    showAllPalmen = not showAllPalmen
 
 home_btn = Button(pygame.Rect(300, 50, 100, 50), "Home")
 add_btn = Button(pygame.Rect(500, 50, 100, 50), "Add")
@@ -149,6 +155,10 @@ def deleteText():
 def clear():
     os.system("cls")
 
+def hidePalmen():
+    screen.fill(primaryColor)
+    pygame.display.flip()
+
 def startUp():
 
     if not os.path.exists("startscreen.png"):
@@ -180,6 +190,9 @@ def startUp():
 startUp()
 
 def addPalme():
+    global showAllPalmen
+    showAllPalmen = False
+
     clear()
 
     geschlecht = getInput(screen, font, 280, 200, 300, 40, "Geschlecht eingeben (m/w)...")
@@ -225,31 +238,115 @@ def addPalme():
     text(screen, font, "Palme erfolgreich hinzugefügt!", 280, 200, accentColor)
     pygame.display.flip()
     time.sleep(3)
+    #showAllPalmen = True
 
 def showPalmen():
+    cursor.execute("SELECT * FROM palmen")
+    daten = cursor.fetchall()
+
+    # Alle Palmen nach ID speichern
+    palmen = {
+        zeile[0]: {
+            "geschlecht": zeile[1],
+            "vater": zeile[2],
+            "mutter": zeile[3]
+        }
+        for zeile in daten
+    }
+
+    generationen = {}
+
+    # Generation jeder Palme berechnen
+    def generation(id_, besucht=None):
+        if id_ in generationen:
+            return generationen[id_]
+
+        if besucht is None:
+            besucht = set()
+
+        if id_ in besucht:
+            raise ValueError("Fehler: Zyklus in den Elternbeziehungen!")
+
+        besucht = besucht | {id_}
+        palme = palmen[id_]
+
+        eltern = [
+            eltern_id
+            for eltern_id in (palme["vater"], palme["mutter"])
+            if eltern_id in palmen
+        ]
+
+        if not eltern:
+            gen = 0
+        else:
+            gen = 1 + max(
+                generation(eltern_id, besucht)
+                for eltern_id in eltern
+            )
+
+        generationen[id_] = gen
+        return gen
+
+    try:
+        for id_ in palmen:
+            generation(id_)
+    except ValueError as fehler:
+        print(fehler)
+        return
+
+    # Palmen nach Generation gruppieren
+    reihen = {}
+
+    for id_, gen in generationen.items():
+        reihen.setdefault(gen, []).append(id_)
+
+    # Positionen aller Palmen berechnen
+    positionen = {}
+    breite = 100
+    hoehe = 50
+    abstand_x = 130
+    abstand_y = 120
+    start_x = 280
+    start_y = 200
+
+    for gen, ids in sorted(reihen.items()):
+        for index, id_ in enumerate(sorted(ids)):
+            x = start_x + index * abstand_x
+            y = start_y + gen * abstand_y
+            positionen[id_] = (x, y)
+
+    # Verbindungslinien zuerst zeichnen
+    for id_, palme in palmen.items():
+        kind_x, kind_y = positionen[id_]
+
+        for eltern_id in (palme["vater"], palme["mutter"]):
+            if eltern_id in positionen:
+                eltern_x, eltern_y = positionen[eltern_id]
+
+                pygame.draw.line(
+                    screen,
+                    (200, 200, 200),
+                    (eltern_x + breite // 2, eltern_y + hoehe),
+                    (kind_x + breite // 2, kind_y),
+                    2
+                )
+
+    # Palmen und ihre IDs zeichnen
     rectangles = []
-    cursor.execute(
-        "SELECT * FROM palmen"
-    )
-    optionen = cursor.fetchall()
 
-    posX = 500
-    posY = 300
+    for id_, (x, y) in positionen.items():
+        rect = pygame.Rect(x, y, breite, hoehe)
 
-    for i in optionen:
-        #posY += 20
-        id_, geschlecht, vater, mutter = i
-        rect = pygame.draw.rect(screen, accentColor, (posX, posY, 100, 50))
+        pygame.draw.rect(screen, accentColor, rect)
+        pygame.draw.rect(screen, (255, 255, 255), rect, 1)
+
+        text = font.render(str(id_), True, (255, 255, 255))
+        screen.blit(text, text.get_rect(center=rect.center))
+
         rectangles.append(rect)
-        textOberflaeche = font.render(str(id_), True, (255, 255, 255))
-        textRechteck = textOberflaeche.get_rect(center=rect.center)
-
-        # Text auf den Bildschirm zeichnen
-        screen.blit(textOberflaeche, textRechteck)
-
-        posX += 130
 
     pygame.display.flip()
+    return rectangles
 
 
 def verwandschaft():
@@ -339,7 +436,7 @@ pygame.event.clear()
 buttonActions = {
     home_btn: home,
     add_btn: addPalme,
-    show_all_btn: showPalmen,
+    show_all_btn: togglePalmen,
     relationship_btn: verwandschaft,
 }
 
@@ -360,9 +457,14 @@ while running:
 
     # Hier wird gezeichnet
     screen.blit(background, (0, 0))
-    text(screen, font, "Welcome farmer!", 280, 150, accentColor)
+    welcomeText = font.render(
+        "Welcome farmer!", True, accentColor
+    )
+    screen.blit(welcomeText, (280, 150))
     drawAllButtons()
-    showPalmen()
+
+    if showAllPalmen:
+        showPalmen()
     
 
     pygame.display.flip()
