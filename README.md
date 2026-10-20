@@ -1,107 +1,130 @@
-# BWINF 45 – 1. Runde
+<div align="center">
 
-Dieses Repository enthält die gemeinsame Bearbeitung der Aufgaben **2 – Flaggenmusterung** und **5 – Inselbegabung** aus der 1. Runde des 45. Bundeswettbewerbs Informatik.
+# BWINF 45 · 1. Runde
 
-## Aufgabe 2: Flaggenmusterung
+### Drei Aufgaben. Drei Perspektiven. Ein Team.
 
-Ziel ist die Ähnlichkeitsanalyse von Flaggenbildern. Das Programm vergleicht die vorgegebenen Flaggen anhand von Farb- und Strukturmerkmalen und erstellt die geforderten Ähnlichkeitsranglisten.
+**Unsere gemeinsame Bearbeitung der Aufgaben 1, 2 und 5**  
+Kreuzwortkreuze · Flaggenmusterung · Inselbegabung
 
-### Vorgehen
+<br>
 
-1. **Bildvorverarbeitung**  
-   Alle Flaggen werden auf eine einheitliche Größe skaliert. Optional werden die bereitgestellten Versionen mit geglätteten Kanten verwendet, um Artefakte durch weiche Farbübergänge zu reduzieren.
+<img src="startscreen.png" alt="PalmManager – Dattelpalmen-Stammbaum" width="82%">
 
-2. **Merkmalsextraktion**  
-   Für jede Flagge werden folgende Merkmale berechnet:
-   - Farbverteilung im HSV-Farbraum
-   - dominante Farben beziehungsweise Farbcluster
-   - grobe räumliche Struktur über ein Raster, etwa 8 × 8 Zellen
-   - Anteil großer zusammenhängender Farbflächen
+<br>
 
-3. **Ähnlichkeitsberechnung**  
-   Die Ähnlichkeit zweier Flaggen wird aus einer gewichteten Kombination von Farb- und Strukturähnlichkeit berechnet. Dafür können beispielsweise die Kosinusähnlichkeit oder eine gewichtete Differenz der Merkmalsvektoren verwendet werden.
+![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
+![Pygame](https://img.shields.io/badge/GUI-Pygame-2E7D32)
+![SQLite](https://img.shields.io/badge/Datenbank-SQLite-003B57?logo=sqlite&logoColor=white)
+![Team](https://img.shields.io/badge/Team-3%20Mitglieder-7C5CFC)
 
-4. **Auswertung**  
-   Das Programm erzeugt:
-   - die fünf ähnlichsten Flaggen zu Deutschland, Costa Rica, Peru und Nepal
-   - die zehn ähnlichsten Paare unter allen Flaggenbildern
+</div>
 
-### Ergebnisse und Interpretation
+---
 
-Die Ergebnisse werden in der Abgabedokumentation begründet. Erläutert wird insbesondere, warum bestimmte Flaggen ähnlich wirken, etwa aufgrund gleicher Farbfolgen oder ähnlicher Streifenmuster. Bei Flaggen mit Emblem oder ungewöhnlicher Form, wie Nepal, wird diskutiert, welche Grenzen ein rein farbbasierter Vergleich hat.
+## Unser Projekt
 
-## Aufgabe 5: Inselbegabung
+Wir sind ein **dreiköpfiges Team** und bearbeiten in der ersten Runde des 45. Bundeswettbewerbs Informatik drei unterschiedliche Problemstellungen. Dieses Repository bündelt unsere Ansätze, Programme und Dokumentationen. Jede Aufgabe hat ihren eigenen Bereich; so bleiben Lösungen unabhängig und lassen sich trotzdem gemeinsam weiterentwickeln.
 
-Ziel ist ein Auskunftssystem für Verwandtschaftsbeziehungen zwischen gezüchteten Dattelpalmen. Das System nimmt Stammbaumdaten entgegen und beantwortet Anfragen zu Verwandtschaftsverhältnissen.
+## Die Aufgaben
 
-### Modellierung
+<table>
+<tr>
+<td width="33%" valign="top">
 
-Die Palmen werden als Knoten eines gerichteten Graphen modelliert. Kanten beschreiben die im Aufgabenblatt vorgegebenen Verwandtschafts- beziehungsweise Zuchtbeziehungen.
+### 01 · Kreuzwortkreuze
 
-Darauf aufbauend lassen sich unter anderem folgende Beziehungen abfragen:
+Wir entwickeln einen Algorithmus, der Kreuzwortkreuze der vorgegebenen Form mit Wörtern aus der BWINF-Wortliste löst. Das Programm soll die Beispiele aus der Aufgabenstellung bearbeiten und passende Wortbelegungen ausgeben.
 
-- Eltern und Kinder einer Palme
-- Großeltern, Enkel, Vorfahren und Nachfahren
-- Geschwister und Halbgeschwister
-- gemeinsame Vorfahren zweier Palmen
+**Im Mittelpunkt:** systematische Suche und Prüfung horizontaler und vertikaler Wörter.
 
-### Aufbau des Programms
+</td>
+<td width="33%" valign="top">
 
-| Komponente | Aufgabe |
-|---|---|
-| Eingabeschnittstelle | Liest Palmen und ihre Beziehungen ein |
-| Datenmodell | Speichert Palmen als Knoten und Beziehungen als Kanten |
-| Abfragesprache | Ermöglicht Fragen wie `Eltern(X)` oder `GemeinsameVorfahren(X, Y)` |
-| Auswertung | Durchsucht den Graphen und berechnet die angefragte Beziehung |
-| Ausgabe | Liefert die passenden Palmen und gegebenenfalls den Beziehungsweg |
+### 02 · Flaggenmusterung
 
-### Dokumentation
+Wir vergleichen Nationalflaggen und bestimmen, welche einander am ähnlichsten sind. Für eine ausgewählte Flagge sollen die fünf ähnlichsten Flaggen erscheinen; außerdem ermittelt das Programm die zehn ähnlichsten Paare.
 
-Die Abgabe dokumentiert insbesondere:
+**Im Mittelpunkt:** Bildmerkmale, Farbverteilungen und nachvollziehbare Ähnlichkeitsbewertung.
 
-- die gewählte Modellierung des Stammbaums
-- das Format der Eingabedaten
-- die unterstützten Fragen und deren genaue Bedeutung
-- die Berechnung der Antworten
-- Grenzen des Modells, etwa bei unvollständigen oder widersprüchlichen Angaben
+</td>
+<td width="33%" valign="top">
 
-## Projektstruktur
+### 05 · Inselbegabung
+
+Wir entwickeln ein Auskunftssystem für die Verwandtschaftsverhältnisse gezüchteter Dattelpalmen. Palmen und ihre Eltern werden erfasst, als Stammbaum dargestellt und über Verwandtschaftsanfragen ausgewertet.
+
+**Im Mittelpunkt:** Datenmodell, Eingabe und verständliche Abfragen über mehrere Generationen.
+
+</td>
+</tr>
+</table>
+
+## Aufgabe 5 in Aktion · PalmManager
+
+Der bereits integrierte Teil des Projekts ist **PalmManager**, eine grafische Anwendung zur Verwaltung des Dattelpalmen-Stammbaums.
+
+- Palmen mit Geschlecht sowie Mutter- und Vater-ID erfassen
+- bekannte Eltern-Kind-Verbindungen generationenweise anzeigen
+- einfache Vorfahren-Abfragen eingeben
+- Daten lokal in SQLite speichern
+
+### Starten
+
+Voraussetzung ist Python 3. Installiere die benötigten Pakete und starte PalmManager aus dem Projektordner:
+
+```bash
+python -m pip install pygame colorama
+python main.py
+```
+
+Beim Programmstart erscheint ein Begrüßungsbildschirm. Ein Mausklick öffnet die Anwendung. Die Navigationsleiste führt zu den Ansichten **Home**, **Add**, **Show All** und **Relations**.
+
+Für eine Vorfahren-Abfrage kann zum Beispiel folgende Kette eingegeben werden:
+
+```text
+mutter->vater->7
+```
+
+Die Eingabe wird von der Palme mit ID `7` aus ausgewertet. Die Abfragefunktion ist derzeit eine erste Implementierung und unterstützt noch keine allgemeine Sprache für beliebige Verwandtschaftsfragen.
+
+## Repository-Aufbau
 
 ```text
 .
-├── README.md
-├── aufgabe2/
-│   ├── flaggenmusterung.py
-│   ├── daten/
-│   └── ergebnisse/
-├── aufgabe5/
-│   ├── inselbegabung.py
-│   ├── beispieldaten/
-│   └── dokumentation/
-└── docs/
-    ├── loesung_aufgabe2.pdf
-    └── loesung_aufgabe5.pdf
+├── aufgabe1/          # Kreuzwortkreuze
+├── aufgabe2/          # Flaggenmusterung
+├── aufgabe5/          # Inselbegabung / PalmManager
+│   ├── main.py
+│   ├── insel.db
+│   ├── startscreen.png
+│   └── background.png
+├── docs/               # Dokumentationen und Ergebnisse
+└── README.md
 ```
 
-## Verwendung
+Die Ordner `aufgabe1/`, `aufgabe2/` und `docs/` beschreiben die gemeinsame Zielstruktur. In der vorliegenden Arbeitskopie liegt PalmManager derzeit im Projektstamm; die Dateien der Aufgaben 1 und 2 sowie die Dokumentationen sind hier noch nicht vorhanden. Die Startbefehle für diese beiden Programme ergänzen wir, sobald ihre Skripte in das Repository integriert sind.
 
-```bash
-# Aufgabe 2 ausführen
-python aufgabe2/flaggenmusterung.py
+## Gemeinsam entwickeln
 
-# Aufgabe 5 ausführen
-python aufgabe5/inselbegabung.py
-```
+Wir halten die drei Aufgaben in getrennten Ordnern und integrieren fertige Änderungen in den gemeinsamen Hauptbranch. So kann jede Person an einem klar abgegrenzten Teil arbeiten, während dieses README den gemeinsamen Stand des Teams festhält.
 
-Für Aufgabe 5 können Anfragen anschließend über die Kommandozeile oder eine interaktive Eingabe gestellt werden.
+## Technik
 
-## Verwendete Technologien
+| Bereich | Technologie |
+| --- | --- |
+| Programmiersprache | Python 3 |
+| Grafische Oberfläche von PalmManager | Pygame |
+| Lokale Datenhaltung | SQLite |
+| Konsolenausgaben | Colorama |
 
-- Python 3
-- `Pillow` für Bildverarbeitung
-- `NumPy` für Vektor- und Matrixberechnungen
-- gegebenenfalls `scikit-learn` für Farbclusterung
+## Wettbewerbsaufgabe
 
-## Hinweise
+Die offiziellen Aufgabenblätter und weitere Informationen gibt es auf der [BWINF-Seite zum 45. Bundeswettbewerb](https://bwinf.de/bundeswettbewerb/45/). Die Aufgabenbezeichnungen und Kurzbeschreibungen in diesem README orientieren sich am [offiziellen Aufgabenblatt der 1. Runde](https://bwinf.de/fileadmin/wettbewerbe/bundeswettbewerb/45/1_Runde/Aufgaben451.pdf).
 
-Die vollständigen Aufgabenstellungen, Beispieldaten und Vorgaben befinden sich auf der offiziellen BWINF-Seite zur 1. Runde des 45. Bundeswettbewerbs Informatik. Die Lösungen in diesem Repository dienen der eigenen Bearbeitung der Wettbewerbsaufgaben.
+<div align="center">
+
+**Gemeinsam programmiert von drei BWINF-Teilnehmenden**  
+*45. Bundeswettbewerb Informatik · 1. Runde*
+
+</div>
