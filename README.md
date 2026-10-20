@@ -1,7 +1,7 @@
 # 🌴 PalmManager
 
 <p align="center">
-  <img src="startscreen.png" alt="PalmManager: Palmen verwalten" width="100%">
+  <img src="startscreen 2.png" alt="PalmManager: Palmen verwalten" width="100%">
 </p>
 
 <p align="center">
