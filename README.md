@@ -10,7 +10,6 @@
 
 ![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
 ![Pillow](https://img.shields.io/badge/Bildverarbeitung-Pillow-6C4A9C)
-![Status](https://img.shields.io/badge/Stand-erste%20Implementierung-orange)
 
 </div>
 
