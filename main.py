@@ -1,4 +1,3 @@
-
 import sqlite3
 import time
 from colorama import Fore, Style, init
@@ -14,6 +13,11 @@ pygame.init()
 # Variables
 displWidth = 1280
 displHeight = 720
+
+showVerwandtschaft = False
+beziehungsAnzeige = None
+beziehungsFehler = None
+beziehungsFehlerZeit = 0
 
 showAllPalmen = True
 running = True
@@ -71,17 +75,15 @@ def togglePalmen():
     showAllPalmen = not showAllPalmen
 
 
-home_btn = Button(pygame.Rect(300, 50, 100, 50), "Home")
-add_btn = Button(pygame.Rect(500, 50, 100, 50), "Add")
-show_all_btn = Button(pygame.Rect(700, 50, 100, 50), "Show All")
+add_btn = Button(pygame.Rect(500, 50, 150, 50), "Hinzufügen")
+show_all_btn = Button(pygame.Rect(700, 50, 150, 50), "Alle anzeigen")
 relationship_btn = Button(
-    pygame.Rect(900, 50, 100, 50), "Relations"
+    pygame.Rect(900, 50, 150, 50), "Beziehungen"
 )
 
 
 def drawAllButtons():
     for btn in (
-        home_btn,
         add_btn,
         show_all_btn,
         relationship_btn
@@ -92,12 +94,6 @@ def drawAllButtons():
 def drawMainScreen():
     screen.fill(primaryColor)
     screen.blit(background, (0, 0))
-
-    welcomeText = font.render(
-        "Welcome farmer!", True, accentColor
-    )
-
-    screen.blit(welcomeText, (280, 150))
     drawAllButtons()
 
 
@@ -258,6 +254,26 @@ def startUp():
 
     showAllPalmen = False
 
+    cursor.execute("SELECT COUNT(*) FROM palmen")
+    count = cursor.fetchone()[0]
+
+    if count == 0:
+        cursor.execute(
+            """
+            INSERT INTO palmen (geschlecht, mutter, vater)
+            VALUES ('m', 0, 0)
+            """
+        )
+
+        cursor.execute(
+            """
+            INSERT INTO palmen (geschlecht, mutter, vater)
+            VALUES ('w', 0, 0)
+            """
+        )
+
+        db.commit()
+
     if not os.path.exists("startscreen.png"):
         print(
             Fore.RED
@@ -291,6 +307,7 @@ def startUp():
 
         screen.blit(startscreen, (0, 0))
 
+        
         pygame.display.flip()
         clock.tick(60)
 
@@ -604,7 +621,39 @@ def showPalmen():
 
 def verwandschaft():
 
-    print("Verwandschaft")
+    global showAllPalmen
+    global showVerwandtschaft
+    global beziehungsAnzeige, beziehungsFehler, beziehungsFehlerZeit
+
+    showAllPalmen = False
+    showVerwandtschaft = True
+
+    beziehungsAnzeige = None
+    beziehungsFehler = None
+
+    # Hilfsfunktion zum Abrufen eines Verwandten
+    def getVerwandter(currentPalme, verwandtschaft):
+
+        cursor.execute(
+            f"SELECT {verwandtschaft} FROM palmen WHERE id=?",
+            (currentPalme,)
+        )
+
+        optionen = cursor.fetchone()
+
+        if optionen is None or optionen[0] is None:
+            return None
+
+        return optionen[0]
+
+    alleEingabeFelder.clear()
+    alleAnzeigeTexte.clear()
+
+    # Eingabemaske anzeigen
+    drawMainScreen()
+    titel = font.render("Beziehungen", True, accentColor)
+    screen.blit(titel, (280, 150))
+    pygame.display.flip()
 
     userInput = getInput(
         screen,
@@ -616,118 +665,70 @@ def verwandschaft():
         "Eingeben (bspw. Vater->ID) ..."
     )
 
-    if userInput is None or not userInput:
+    if userInput is None or not userInput.strip():
         return
 
-    userInput = userInput.lower()
+    userInput = userInput.lower().strip()
+    userInputTable = [
+        element.strip()
+        for element in userInput.split("->")
+    ]
 
-    userInputTable = userInput.split("->")
+    # Die letzte Eingabe ist die ID der Ausgangspalme.
+    currentPalme = userInputTable.pop()
 
-    currentPalme = userInputTable[-1]
+    # Prüfen, ob die Ausgangspalme überhaupt existiert.
+    cursor.execute(
+        "SELECT id FROM palmen WHERE id=?",
+        (currentPalme,)
+    )
+
+    if cursor.fetchone() is None:
+        beziehungsFehler = "Palme mit dieser ID nicht gefunden!"
+        beziehungsFehlerZeit = pygame.time.get_ticks()
+        return
 
     userInputTable.reverse()
-
-    del userInputTable[0]
-
-    print(userInputTable)
 
     for element in userInputTable:
 
         if element == "vater":
-
-            cursor.execute(
-                "SELECT vater FROM palmen WHERE id=?",
-                (currentPalme,)
-            )
-
-            optionen = cursor.fetchone()
-            currentPalme = optionen[0]
+            currentPalme = getVerwandter(currentPalme, "vater")
 
         elif element == "mutter":
+            currentPalme = getVerwandter(currentPalme, "mutter")
 
-            cursor.execute(
-                "SELECT mutter FROM palmen WHERE id=?",
-                (currentPalme,)
-            )
+        elif "großmutter" in element:
+            for _ in range(2 + element.count("ur")):
+                currentPalme = getVerwandter(currentPalme, "mutter")
 
-            optionen = cursor.fetchone()
-            currentPalme = optionen[0]
+                if currentPalme is None:
+                    break
 
-        elif (
-            "großmutter" in element
-            and "ur" not in element
-        ):
+        elif "großvater" in element:
+            for _ in range(2 + element.count("ur")):
+                currentPalme = getVerwandter(currentPalme, "vater")
 
-            for i in range(2):
+                if currentPalme is None:
+                    break
 
-                cursor.execute(
-                    "SELECT mutter FROM palmen WHERE id=?",
-                    (currentPalme,)
-                )
+        else:
+            beziehungsFehler = "Unbekannte Verwandtschaft!"
+            break
 
-                optionen = cursor.fetchone()
-                currentPalme = optionen[0]
+        if currentPalme is None:
+            beziehungsFehler = "Verwandter nicht gefunden!"
+            break
 
-        elif (
-            "großvater" in element
-            and "ur" not in element
-        ):
-
-            for i in range(2):
-
-                cursor.execute(
-                    "SELECT vater FROM palmen WHERE id=?",
-                    (currentPalme,)
-                )
-
-                optionen = cursor.fetchone()
-                currentPalme = optionen[0]
-
-        elif (
-            "ur" in element
-            and "großmutter" in element
-        ):
-
-            count = element.count("ur")
-
-            for i in range(count):
-
-                cursor.execute(
-                    "SELECT mutter FROM palmen WHERE id=?",
-                    (currentPalme,)
-                )
-
-                optionen = cursor.fetchone()
-                currentPalme = optionen[0]
-
-        elif (
-            "ur" in element
-            and "großvater" in element
-        ):
-
-            count = element.count("ur")
-
-            for i in range(count):
-
-                cursor.execute(
-                    "SELECT vater FROM palmen WHERE id=?",
-                    (currentPalme,)
-                )
-
-                optionen = cursor.fetchone()
-                currentPalme = optionen[0]
-
-        print("ID: " + str(currentPalme))
-
-    input()
+    if beziehungsFehler is not None:
+        beziehungsAnzeige = None
+        beziehungsFehlerZeit = pygame.time.get_ticks()
+    else:
+        beziehungsAnzeige = "ID: " + str(currentPalme)
 
 
 def home():
-
-    print("Home")
-
-    deleteText()
-    deleteAllInputs()
+    print("Home button clicked")
 
 
 # Pygame-Fenster initialisieren
@@ -742,7 +743,6 @@ pygame.display.set_caption("PalmManager")
 clock = pygame.time.Clock()
 
 buttonActions = {
-    home_btn: home,
     add_btn: addPalmeWithDelay,
     show_all_btn: togglePalmen,
     relationship_btn: verwandschaft
@@ -764,21 +764,62 @@ while running:
 
         if event.type == pygame.QUIT:
             running = False
+            break
 
         for btn, action in buttonActions.items():
 
             if btn.isClicked(event):
+
+                # Jeder andere Button beendet die Verwandtschaftsansicht.
+                if btn != relationship_btn:
+                    showVerwandtschaft = False
+                    beziehungsAnzeige = None
+                    beziehungsFehler = None
+                    beziehungsFehlerZeit = 0
+
                 action()
+                break
 
-    # Bildschirm neu zeichnen
-    drawMainScreen()
+    if not running:
+        break
 
-    # showAllPalmen steuert die Anzeige
-    if showAllPalmen:
-        showPalmen()
+    # Verwandtschaftsansicht: Nur Hintergrund, Buttons und Ergebnis anzeigen.
+    if showVerwandtschaft:
+
+        drawMainScreen()
+
+        titel = font.render("Beziehungen", True, accentColor)
+        screen.blit(titel, (280, 150))
+
+        if beziehungsAnzeige is not None:
+            ergebnis = font.render(
+                beziehungsAnzeige,
+                True,
+                accentColor
+            )
+            screen.blit(ergebnis, (350, 200))
+
+        if beziehungsFehler is not None:
+
+            if pygame.time.get_ticks() - beziehungsFehlerZeit < 3000:
+                fehler = font.render(
+                    beziehungsFehler,
+                    True,
+                    attentionColor
+                )
+                screen.blit(fehler, (350, 200))
+            else:
+                beziehungsFehler = None
+
+    # Normale Ansicht
+    else:
+
+        drawMainScreen()
+
+        if showAllPalmen:
+            showPalmen()
 
     pygame.display.flip()
-
     clock.tick(30)
 
 
